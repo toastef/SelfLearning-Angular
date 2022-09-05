@@ -32,14 +32,24 @@ export class PokemonService {
         );
     }
 
+    searchPokemonList(term: string): Observable<Pokemon[]> {
+        if(term.length <= 1 ) {   // rien afficher si l'utilisateur a tapé moins de 2 lettres
+            return of([]);
+        }
+        return this.http.get<Pokemon[]>(`api/pokemons/?name=${term}`).pipe(
+            tap((response) => this.log(response)),
+            catchError((error) => this.handleError(error, []))
+        );
+    }
+
     /** Modification pokemon requete http*/
     updatePokemon(pokemon: Pokemon): Observable<null> {
         const httpOptions = {
             headers: new HttpHeaders({'Content-Type': 'application/json'})
         };
         return this.http.put('api/pokemons', pokemon, httpOptions).pipe(
-          tap((response) => console.log(response)),
-            catchError((error) => this.handleError(error,null))
+            tap((response) => console.log(response)),
+            catchError((error) => this.handleError(error, null))
         );
     }
 
@@ -48,16 +58,16 @@ export class PokemonService {
             headers: new HttpHeaders({'Content-Type': 'application/json'})
         };
 
-        return this.http.post<Pokemon>('api/pokemons' , pokemon, httpOptions).pipe(
+        return this.http.post<Pokemon>('api/pokemons', pokemon, httpOptions).pipe(
             tap((response) => console.log(response)),
-            catchError((error) => this.handleError(error,null))
+            catchError((error) => this.handleError(error, null))
         );
     }
 
     deletePokemonById(pokemonId: number): Observable<null> {
         return this.http.delete(`api/pokemons/${pokemonId}`).pipe(
             tap((response) => console.log(response)),
-            catchError((error) => this.handleError(error,null))
+            catchError((error) => this.handleError(error, null))
         );
     }
 
